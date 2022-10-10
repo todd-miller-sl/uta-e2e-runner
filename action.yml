@@ -18,7 +18,7 @@ inputs:
     description: 'API branch to run against (default = "development")'
     required: false
     default: 'development'
-  cache_folder: 
+  cache_folder:
     description: 'Dependency cache folder (default = "/tmp/CypressBinary")'
     required: false
     default: '/tmp/CypressBinary'
@@ -41,10 +41,13 @@ inputs:
     description: 'Location where failed cypress screenshots are saved'
     required: false
     default: 'cypress/screenshots'
-
+outputs:
+  something:
+    description: "some kind of output"
+    value: 'this!'
 runs:
-  using: 'composite'
-  steps: 
+  using: "composite"
+  steps:
     - name: Checkout APP
       uses: actions/checkout@v2
       with:
@@ -61,12 +64,14 @@ runs:
         token: ${{ inputs.pat_token }}
 
     - name: Setup Node.js
+      shell: bash
       uses: actions/setup-node@v2
       with:
         node-version: '16'
 
     - name: Cache dependencies
       id: cache
+      shell: bash
       uses: actions/cache@v3
       with:
         path: |
@@ -74,19 +79,22 @@ runs:
           ./app/node_modules
           ${{ inputs.cache_folder }}
         key: ${{ runner.os }}-${{ inputs.cache_name }}-${{ hashFiles('**/yarn.lock') }}
-   
+
     - name: Start DB
       uses: supercharge/mongodb-github-action@1.7.0
       with:
         mongodb-version: '4.4'
 
     - name: Restore DB
-      run: mongorestore ./app/${{ inputs.db_dump_folder }} 
+      shell: bash
+      run: mongorestore ./app/${{ inputs.db_dump_folder }}
 
     - name: Install pm2
+      shell: bash
       run: npm i -g pm2
 
     - name: Start API Server
+      shell: bash
       working-directory: ./api
       env:
         MONGO_URL: mongodb://localhost:27017/${{ inputs.db_name }}
@@ -101,18 +109,17 @@ runs:
         working-directory: ./app
         start: yarn start
         config-file: cypress.config.ts
-        spec: ${{ inputs.spec }} 
+        spec: ${{ inputs.spec }}
         wait-on-timeout: 300
         wait-on: 'http://localhost:3010, http://localhost:8001'
       env:
         CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         DEBUG: 'cypress:*'
-        # https://github.com/cypress-io/cypress/issues/22506#issuecomment-1255934532
-        CYPRESS_NO_COMMAND_LOG: 1
+
     - name: Failure Screenshots
       uses: actions/upload-artifact@v2
       if: failure()
       with:
         name: cypress-snapshots
-        path: ./app/${{ inputs.screenshots_folder}} 
+        path: ./app/${{ inputs.screenshots_folder}}
