@@ -64,12 +64,14 @@ runs:
         token: ${{ inputs.pat_token }}
 
     - name: Setup Node.js
+      shell: bash
       uses: actions/setup-node@v2
       with:
         node-version: '16'
 
     - name: Cache dependencies
       id: cache
+      shell: bash
       uses: actions/cache@v3
       with:
         path: |
@@ -84,12 +86,15 @@ runs:
         mongodb-version: '4.4'
 
     - name: Restore DB
+      shell: bash
       run: mongorestore ./app/${{ inputs.db_dump_folder }}
 
     - name: Install pm2
+      shell: bash
       run: npm i -g pm2
 
     - name: Start API Server
+      shell: bash
       working-directory: ./api
       env:
         MONGO_URL: mongodb://localhost:27017/${{ inputs.db_name }}
@@ -111,8 +116,7 @@ runs:
         CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         DEBUG: 'cypress:*'
-        # https://github.com/cypress-io/cypress/issues/22506#issuecomment-1255934532
-        CYPRESS_NO_COMMAND_LOG: 1
+
     - name: Failure Screenshots
       uses: actions/upload-artifact@v2
       if: failure()
