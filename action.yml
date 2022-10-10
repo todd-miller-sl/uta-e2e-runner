@@ -37,6 +37,11 @@ inputs:
     description: 'Database name to use for run (default = "uta-test")'
     required: false
     default: 'uta-test'
+  screenshots_folder:
+    description: 'Location where failed cypress screenshots are saved'
+    required: false
+    default: 'cypress/screenshots'
+
 runs:
   using: 'composite'
   steps: 
@@ -76,7 +81,7 @@ runs:
         mongodb-version: '4.4'
 
     - name: Restore DB
-      run: mongorestore ./app/${{ cypress/fixtures/e2e/dump }} 
+      run: mongorestore ./app/${{ inputs.db_dump_folder }} 
 
     - name: Install pm2
       run: npm i -g pm2
@@ -96,12 +101,12 @@ runs:
         working-directory: ./app
         start: yarn start
         config-file: cypress.config.ts
-        spec: ./cypress/tests/e2e/**/deal-form.spec.js
+        spec: ${{ inputs.spec }} 
         wait-on-timeout: 300
         wait-on: 'http://localhost:3010, http://localhost:8001'
       env:
-        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
         DEBUG: 'cypress:*'
         # https://github.com/cypress-io/cypress/issues/22506#issuecomment-1255934532
         CYPRESS_NO_COMMAND_LOG: 1
@@ -110,4 +115,4 @@ runs:
       if: failure()
       with:
         name: cypress-snapshots
-        path: ./app/cypress/screenshots
+        path: ./app/${{ inputs.screenshots_folder}} 
