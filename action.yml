@@ -37,24 +37,19 @@ inputs:
     description: 'Database name to use for run (default = "uta-test")'
     required: false
     default: 'uta-test'
-  screenshots_folder:
-    description: 'Location where failed cypress screenshots are saved'
-    required: false
-    default: 'cypress/screenshots'
-outputs:
-  something:
-    description: "some kind of output"
-    value: 'this!'
+
 runs:
   using: "composite"
   steps:
     - name: Checkout APP
+      shell: bash
       uses: actions/checkout@v2
       with:
         path: ./app
         persist-credentials: false
 
     - name: Checkout API
+      shell: bash
       uses: actions/checkout@v2
       with:
         path: ./api
@@ -81,6 +76,7 @@ runs:
         key: ${{ runner.os }}-${{ inputs.cache_name }}-${{ hashFiles('**/yarn.lock') }}
 
     - name: Start DB
+      shell: bash
       uses: supercharge/mongodb-github-action@1.7.0
       with:
         mongodb-version: '4.4'
@@ -102,6 +98,7 @@ runs:
       run: NODE_ENV=local pm2 start app.js
 
     - name: Cypress Run
+      shell: bash
       uses: cypress-io/github-action@v4
       with:
         install: false
@@ -116,10 +113,3 @@ runs:
         CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
         DEBUG: 'cypress:*'
-
-    - name: Failure Screenshots
-      uses: actions/upload-artifact@v2
-      if: failure()
-      with:
-        name: cypress-snapshots
-        path: ./app/${{ inputs.screenshots_folder}}
