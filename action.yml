@@ -42,13 +42,13 @@ runs:
   using: "composite"
   steps:
     - name: Checkout APP
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: ./app
         persist-credentials: false
 
     - name: Checkout API
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         path: ./api
         persist-credentials: false
@@ -57,7 +57,7 @@ runs:
         token: ${{ inputs.pat_token }}
 
     - name: Setup Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v3
       with:
         node-version: '16'
 
