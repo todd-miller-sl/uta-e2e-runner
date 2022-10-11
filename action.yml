@@ -106,4 +106,3 @@ runs:
       env:
         CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
-        DEBUG: 'cypress:*'
