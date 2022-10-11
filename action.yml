@@ -1,0 +1,109 @@
+name: 'UTA E2E Client-Runner'
+description: 'Creates an E2E run with a specified DB, API and Client app'
+inputs:
+  spec:
+    description: 'name(s) of spec files to run (can use glob-pattern)'
+    required: true
+  pat_token:
+    description: 'PAT token for accessing private repos'
+    required: true
+  github_token:
+    description: 'GITHUB_TOKEN for cypress run'
+    required: true
+  api_repo:
+    description: 'API repository (default = "data-apis")'
+    required: false
+    default: 'united-talent-agency/data-apis'
+  api_branch:
+    description: 'API branch to run against (default = "development")'
+    required: false
+    default: 'development'
+  cache_folder:
+    description: 'Dependency cache folder (default = "/tmp/CypressBinary")'
+    required: false
+    default: '/tmp/CypressBinary'
+  cache_name:
+    description: 'Dependency cache name (default = "cache-touring")'
+    required: false
+    default: 'cache-touring'
+  record_key:
+    description: 'Cypress Record Key'
+    required: true
+  db_dump_folder:
+    description: 'Path to mongo "dump" folder to restore (default = "cypress/fixtures/e2e/dump)'
+    required: false
+    default: 'cypress/fixtures/e2e/dump'
+  db_name:
+    description: 'Database name to use for run (default = "uta-test")'
+    required: false
+    default: 'uta-test'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout APP
+      uses: actions/checkout@v2
+      with:
+        path: ./app
+        persist-credentials: false
+
+    - name: Checkout API
+      uses: actions/checkout@v2
+      with:
+        path: ./api
+        persist-credentials: false
+        repository: ${{ inputs.api_repo }}
+        ref: ${{ inputs.api_branch }}
+        token: ${{ inputs.pat_token }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
+    - name: Cache dependencies
+      id: cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ./api/node_modules
+          ./app/node_modules
+          ${{ inputs.cache_folder }}
+        key: ${{ runner.os }}-${{ inputs.cache_name }}-${{ hashFiles('**/yarn.lock') }}
+
+    - name: Start DB
+      uses: supercharge/mongodb-github-action@1.7.0
+      with:
+        mongodb-version: '4.4'
+
+    - name: Restore DB
+      shell: bash
+      run: mongorestore ./app/${{ inputs.db_dump_folder }}
+
+    - name: Install pm2
+      shell: bash
+      run: npm i -g pm2
+
+    - name: Start API Server
+      shell: bash
+      working-directory: ./api
+      env:
+        MONGO_URL: mongodb://localhost:27017/${{ inputs.db_name }}
+        JWT_SECRET: 'THIS_IS_ONLY_TO_BE_USED_IN_DEV_OR_TEST'
+      run: NODE_ENV=local pm2 start app.js
+
+    - name: Cypress Run
+      uses: cypress-io/github-action@v4
+      with:
+        install: false
+        browser: chrome
+        working-directory: ./app
+        start: yarn start
+        config-file: cypress.config.ts
+        spec: ${{ inputs.spec }}
+        wait-on-timeout: 300
+        wait-on: 'http://localhost:3010, http://localhost:8001'
+      env:
+        CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+        DEBUG: 'cypress:*'
