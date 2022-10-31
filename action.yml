@@ -10,6 +10,14 @@ inputs:
   github_token:
     description: 'GITHUB_TOKEN for cypress run'
     required: true
+  app_repo:
+    description: 'APP repository (default = "julius-frontend-touring")'
+    required: true
+    default: 'united-talent-agency/julius-frontend-touring'
+  app_branch:
+    description: 'APP branch to run against (default = "development")'
+    required: false
+    default: 'development'
   api_repo:
     description: 'API repository (default = "data-apis")'
     required: false
@@ -46,6 +54,9 @@ runs:
       with:
         path: ./app
         persist-credentials: false
+        repository: ${{ inputs.app_repo }}
+        ref: ${{ inputs.app_branch }}
+        token: ${{ inputs.pat_token }}
 
     - name: Checkout API
       uses: actions/checkout@v3
@@ -74,7 +85,7 @@ runs:
     - name: Start DB
       uses: supercharge/mongodb-github-action@1.7.0
       with:
-        mongodb-version: '4.4'
+        mongodb-version: '5.0'
 
     - name: Restore DB
       shell: bash
