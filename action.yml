@@ -114,6 +114,13 @@ runs:
         spec: ${{ inputs.spec }}
         wait-on-timeout: 300
         wait-on: 'http://localhost:3010, http://localhost:8001'
+        record: true
+        tag: ${{ github.event_name }}, ${{ inputs.api_branch }}
       env:
         CYPRESS_RECORD_KEY: ${{ inputs.record_key }}
         GITHUB_TOKEN: ${{ inputs.github_token }}
+        # - if the event is push, the title will be undefined
+        # and Cypress will get the commit message from Git information
+        # - if the event is pull_request, then we set the commit
+        # message to the pull request title
+        COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
