@@ -89,11 +89,8 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.install.outputs.matrix) }}
     steps:
-      - name: Check branch name
-        run: |
-          echo "Running on branch ${{ github.ref_name }}"
       - name: E2E Runner - ${{ matrix.name }}
-        uses: united-talent-agency/uta-e2e-runner@${{ github.ref_name }}
+        uses: united-talent-agency/uta-e2e-runner@feature/cypress_record
         with: 
           spec: ${{ matrix.spec }}
           pat_token: ${{ env.ACCESS_TOKEN }}
