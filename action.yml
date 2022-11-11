@@ -49,6 +49,9 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Test step 
+      run: |
+        echo "In ${{ github.ref_name }}"
     - name: Checkout APP
       uses: actions/checkout@v3
       with:
