@@ -6,4 +6,6 @@ on:
 jobs:
   call-smoke-test-workflow:
     uses: ./.github/workflows/composite_smoke_test.yml
+    with:
+      local_ref: ${{ github.ref_name }}
     secrets: inherit

@@ -2,7 +2,10 @@ name: ON-COMPOSITE:Test-Gate
 
 on:
   workflow_call:
-
+    inputs:
+      local_ref:
+        required: true
+        type: string
 env:
   ENVIRONMENT: 'local'
   API_BRANCH: 'development'
@@ -16,6 +19,7 @@ env:
   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+  ACTION_REF: ${{ inputs.local_ref }}
 
 jobs:
   install:
@@ -90,7 +94,7 @@ jobs:
       matrix: ${{ fromJson(needs.install.outputs.matrix) }}
     steps:
       - name: E2E Runner - ${{ matrix.name }}
-        uses: united-talent-agency/uta-e2e-runner@feature/cypress_record
+        uses: united-talent-agency/uta-e2e-runner@${{ env.ACTION_REF }}
         with: 
           spec: ${{ matrix.spec }}
           pat_token: ${{ env.ACCESS_TOKEN }}
