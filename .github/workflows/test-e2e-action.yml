@@ -5,5 +5,5 @@ on:
 
 jobs:
   call-smoke-test-workflow:
-    uses: ./.github/workflows/composite_smoke_test.yml@feature/cypress_record
+    uses: ./.github/workflows/composite_smoke_test.yml
     secrets: inherit
