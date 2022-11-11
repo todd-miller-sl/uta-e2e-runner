@@ -1,0 +1,9 @@
+name: Test E2E Composite Action
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  call-smoke-test-workflow:
+    uses: ./.github/workflows/composite_smoke_test.yml@feature/cypress_record
+    secrets: inherit
