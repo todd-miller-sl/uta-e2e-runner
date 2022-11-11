@@ -6,6 +6,7 @@ on:
       local_ref:
         required: true
         type: string
+        default: development
 env:
   ENVIRONMENT: 'local'
   API_BRANCH: 'development'
