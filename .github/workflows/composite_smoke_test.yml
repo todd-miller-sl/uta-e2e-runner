@@ -94,7 +94,7 @@ jobs:
       matrix: ${{ fromJson(needs.install.outputs.matrix) }}
     steps:
       - name: E2E Runner - ${{ matrix.name }}
-        uses: .
+        uses: ./
         with: 
           spec: ${{ matrix.spec }}
           pat_token: ${{ env.ACCESS_TOKEN }}
