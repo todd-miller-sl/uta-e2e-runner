@@ -1,6 +1,5 @@
-name: Test E2E Composite Action
+name: Test E2E Composite Action Manually
 on: 
-  push:
   workflow_dispatch:
 
 jobs:
