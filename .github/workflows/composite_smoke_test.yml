@@ -1,0 +1,109 @@
+name: ON-COMPOSITE:Test-Gate
+
+on:
+  workflow_call:
+    inputs:
+      local_ref:
+        required: true
+        type: string
+        default: development
+env:
+  ENVIRONMENT: 'local'
+  API_BRANCH: 'development'
+  API_SERVER_REPOSITORY: 'united-talent-agency/data-apis'
+  TOURING_REPOSITORY: 'united-talent-agency/julius-frontend-touring'
+  CACHE_NAME: cache-touring
+  CYPRESS_CACHE_FOLDER: '/tmp/CypressBinary'
+  DB_DUMP_FOLDER: 'cypress/fixtures/e2e/dump'
+  DB_NAME: 'uta-test'
+  SCREENSHOTS_FOLDER: 'cypress/screenshots'
+  CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout TOURING
+        uses: actions/checkout@v3
+        with:
+          path: ./app
+          persist-credentials: false
+          repository: ${{ env.TOURING_REPOSITORY }}
+          ref: ${{ env.API_BRANCH }}
+          token: ${{ env.ACCESS_TOKEN }}
+          submodules: recursive
+
+      - name: Checkout API
+        uses: actions/checkout@v3
+        with:
+          path: ./api
+          persist-credentials: false
+          repository: ${{ env.API_SERVER_REPOSITORY }}
+          ref: ${{ env.API_BRANCH }}
+          token: ${{ env.ACCESS_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ./api/node_modules
+            ./app/node_modules
+            ${{ env.CYPRESS_CACHE_FOLDER }}
+          key: ${{ runner.os }}-${{ env.CACHE_NAME }}-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          yarn --cwd ./api/ install --frozen-lockfile
+          yarn --cwd ./app/ install --frozen-lockfile
+
+      - name: Install cypress binary
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npx cypress install --force
+        working-directory: ./app
+
+      - name: Set Matrix
+        id: set-matrix
+        run: |
+          output="$(cat ./app/cypress/spec.config.json)"
+          # the following lines are only required for multi line json
+          output="${output//'%'/'%25'}"
+          output="${output//$'\n'/'%0A'}"
+          output="${output//$'\r'/'%0D'}"
+          # end of optional handling for multi line json
+          echo "::set-output name=matrix::$output"
+
+      - run: |
+          echo "${{ fromJson(steps.set-matrix.outputs.matrix) }}"
+
+  e2e:
+    needs: [ install ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix: ${{ fromJson(needs.install.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: E2E Runner - ${{ matrix.name }}
+        uses: ./
+        with: 
+          spec: ${{ matrix.spec }}
+          pat_token: ${{ env.ACCESS_TOKEN }}
+          github_token: ${{ env.GITHUB_TOKEN }}
+          api_repo: ${{ env.API_SERVER_REPOSITORY }}
+          api_branch: ${{ env.API_BRANCH }}
+          cache_folder: ${{ env.CYPRESS_CACHE_FOLDER }}
+          cache_name: ${{ env.CACHE_NAME }}
+          record_key: ${{ env.CYPRESS_RECORD_KEY }}
+          db_dump_folder: ${{ env.DB_DUMP_FOLDER }}
+          db_name: ${{ env.DB_NAME }}
