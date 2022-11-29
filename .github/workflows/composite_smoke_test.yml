@@ -51,10 +51,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: Start MongoDB
-        uses: supercharge/mongodb-github-action@1.8.0
-        with:
-          mongodb-version: ${{ env.MONGO_DB_VERSION }}
 
       - name: Cache dependencies
         id: cache
@@ -99,6 +95,10 @@ jobs:
       matrix: ${{ fromJson(needs.install.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v3
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.8.0
+        with:
+          mongodb-version: ${{ env.MONGO_DB_VERSION }}
       - name: E2E Runner - ${{ matrix.name }}
         uses: ./
         with: 
