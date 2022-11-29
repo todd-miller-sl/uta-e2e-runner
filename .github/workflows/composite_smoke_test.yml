@@ -75,7 +75,7 @@ jobs:
       - name: Set Matrix
         id: set-matrix
         run: |
-          output="$(cat ./app/cypress/spec.config.json)"
+          output="$(cat ./app/cypress/smoke-spec.config.json)"
           # the following lines are only required for multi line json
           output="${output//'%'/'%25'}"
           output="${output//$'\n'/'%0A'}"
