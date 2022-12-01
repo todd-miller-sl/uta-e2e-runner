@@ -1,14 +1,16 @@
-import { Flat } from './flat';
+import { Versus } from "./versus";
 import { validatePotentialAndExpenses } from './terms';
 
-export class FixedSplit extends Flat {
-  percent: number;
-  afterAmount: number;
+export class FixedSplit extends Versus {
+  private _afterAmount: number;
 
   constructor(bonus: number, guarantee: number, percent: number, afterAmount: number) {
-    super(bonus, guarantee);
-    this.percent = percent;
-    this.afterAmount = afterAmount;
+    super(bonus, guarantee, percent);
+    this._afterAmount = afterAmount;
+  }
+
+  get afterAmount(): number {
+    return this._afterAmount;
   }
 
   walkoutPotential(potential: number, expenses: number) {

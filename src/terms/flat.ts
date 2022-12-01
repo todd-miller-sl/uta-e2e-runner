@@ -2,11 +2,14 @@ import { Terms } from './terms';
 
 export class Flat extends Terms {
   guarantee: number;
-  static afterAmount = 0;
 
   constructor(bonus: number, guarantee: number) {
     super(bonus);
     this.guarantee = guarantee;
+  }
+
+  get afterAmount(): number {
+    return 0;
   }
 
   get breakEven(): number {
