@@ -1,4 +1,4 @@
-import { Versus } from "./versus";
+import { Versus } from './versus';
 import { validatePotentialAndExpenses } from './terms';
 
 export class FixedSplit extends Versus {

@@ -18,7 +18,7 @@ export class DoorDeal extends Terms {
     return 0;
   }
 
-  walkout (potential: number, expenses: number) {
+  walkout(potential: number, expenses: number) {
     return (this.percent * (potential - expenses)) / 100;
   }
 

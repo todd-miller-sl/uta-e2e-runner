@@ -13,9 +13,16 @@ export class Terms {
  * @param {boolean} ignoreLessThanZero - Ignore negative potential and expenses for this validation.
  * Raises: Error: if the potential and expenses combination is invalid.
  */
-export const validatePotentialAndExpenses = (potential: number, expenses: number, ignoreLessThanZero: boolean = false) => {
+export const validatePotentialAndExpenses = (
+  potential: number,
+  expenses: number,
+  ignoreLessThanZero: boolean = false
+) => {
   if ((potential < 0 || expenses < 0) && !ignoreLessThanZero) {
-    throw new Error(`Potential (${potential}) and expenses (${expenses}) must be greater than or equal to 0`);
+    throw new Error(
+      `Potential (${potential}) and expenses (${expenses}) must be greater than or equal to 0`
+    );
   }
-  if (potential < expenses) throw new Error(`Potential (${potential}) should be greater than expenses (${expenses})`);
+  if (potential < expenses)
+    throw new Error(`Potential (${potential}) should be greater than expenses (${expenses})`);
 };

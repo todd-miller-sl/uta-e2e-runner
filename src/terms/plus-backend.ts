@@ -14,7 +14,8 @@ export class PlusBackend extends Flat {
   walkoutPotential(potential: number, expenses: number) {
     validatePotentialAndExpenses(potential, expenses);
     const splitPoint = expenses * (1 + this.buyerProfit / 100);
-    if (potential < splitPoint) throw new Error('Potential should be greater than the expenses plus buyer profit');
+    if (potential < splitPoint)
+      throw new Error('Potential should be greater than the expenses plus buyer profit');
     return this.guarantee + (this.percent * (potential - splitPoint)) / 100 + this.bonus;
   }
 }

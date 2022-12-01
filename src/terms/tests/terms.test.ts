@@ -1,13 +1,12 @@
 import { Flat } from '../flat';
 import { DoorDeal } from '../door-deal';
-import { Capped} from '../capped';
+import { Capped } from '../capped';
 import { PlusBackend } from '../plus-backend';
 import { FixedSplit } from '../fixed-split';
 import { Versus } from '../versus';
 
 describe('Terms', () => {
   describe('Flat Terms', () => {
-
     it('should calculate break even value', () => {
       const flat = new Flat(0, 1000);
 
@@ -40,7 +39,6 @@ describe('Terms', () => {
   });
 
   describe('Door Deal Terms', () => {
-
     it('should calculate break even value', () => {
       const doordeal = new DoorDeal(0, 10, 245);
 
@@ -95,20 +93,20 @@ describe('Terms', () => {
 
   describe('Capped Door Deal Terms', () => {
     it('should calculate break even value', () => {
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       expect(capped.breakEven).toBe(0);
     });
 
     it('should imply a guarantee', () => {
       // guarantee is not defined for capped but implictly this is 0
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       expect(capped.guarantee).toBe(0);
     });
 
     it('should not calculate walkout potential with negative expenses', () => {
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       expect(() => capped.walkoutPotential(10000, -1)).toThrow(
         'Potential (10000) and expenses (-1) must be greater than or equal to 0'
@@ -116,7 +114,7 @@ describe('Terms', () => {
     });
 
     it('should calculate walkout potential with no expenses', () => {
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       // without bonus
       expect(capped.walkoutPotential(10000, 0)).toBe(1000);
@@ -127,7 +125,7 @@ describe('Terms', () => {
     });
 
     it('should calculate walkout potential with less expenses than potential', () => {
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       // without bonus
       expect(capped.walkoutPotential(10000, 5000)).toBe(500);
@@ -138,7 +136,7 @@ describe('Terms', () => {
     });
 
     it('should not calculate walkout potential with more expenses than potential', () => {
-      const capped = new Capped(0, 10, 245,10000);
+      const capped = new Capped(0, 10, 245, 10000);
 
       expect(() => capped.walkoutPotential(10000, 20000)).toThrow(
         'Potential (10000) should be greater than expenses (20000)'
@@ -146,7 +144,7 @@ describe('Terms', () => {
     });
 
     it('should calculate walkout potential with a cap limit', () => {
-      const capped = new Capped(0, 10, 245,100);
+      const capped = new Capped(0, 10, 245, 100);
 
       // without bonus
       expect(capped.walkoutPotential(10000, 0)).toBe(100);
@@ -158,7 +156,6 @@ describe('Terms', () => {
   });
 
   describe('Plus Backend', () => {
-
     it('should calculate break even value', () => {
       const plusBackend = new PlusBackend(0, 1000, 10, 25);
 
@@ -214,7 +211,6 @@ describe('Terms', () => {
   });
 
   describe('Fixed Split Terms', () => {
-
     it('should calculate break even value', () => {
       const fixedSplit = new FixedSplit(0, 1000, 10, 25);
 
@@ -264,7 +260,6 @@ describe('Terms', () => {
   });
 
   describe('Versus Terms', () => {
-
     it('should calculate break even value', () => {
       const versusGross = new Versus(0, 1000, 10);
 
