@@ -1,4 +1,4 @@
-export { Flat, DoorDeal, Capped, PlusBackend, FixedSplit, Versus } from './terms';
+export { Terms, Flat, DoorDeal, Capped, PlusBackend, FixedSplit, Versus } from './terms';
 
 /**
  * This calculates the tax amount for each ticket in a ticket tier.
