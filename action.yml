@@ -1,55 +1,63 @@
-name: 'UTA E2E Client-Runner'
-description: 'Creates an E2E run with a specified DB, API and Client app'
+name: "UTA E2E Client-Runner"
+description: "Creates an E2E run with a specified DB, API and Client app"
 inputs:
   spec:
-    description: 'name(s) of spec files to run (can use glob-pattern)'
+    description: "name(s) of spec files to run (can use glob-pattern)"
     required: true
   pat_token:
-    description: 'PAT token for accessing private repos'
+    description: "PAT token for accessing private repos"
     required: true
   github_token:
-    description: 'GITHUB_TOKEN for cypress run'
+    description: "GITHUB_TOKEN for cypress run"
     required: true
   app_repo:
     description: 'APP repository (default = "julius-frontend-touring")'
     required: true
-    default: 'united-talent-agency/julius-frontend-touring'
+    default: "united-talent-agency/julius-frontend-touring"
   app_branch:
     description: 'APP branch to run against (default = "development")'
     required: false
-    default: 'development'
+    default: "development"
   api_repo:
     description: 'API repository (default = "data-apis")'
     required: false
-    default: 'united-talent-agency/data-apis'
+    default: "united-talent-agency/data-apis"
   api_branch:
     description: 'API branch to run against (default = "development")'
     required: false
-    default: 'development'
+    default: "development"
   cache_folder:
     description: 'Dependency cache folder (default = "/tmp/CypressBinary")'
     required: false
-    default: '/tmp/CypressBinary'
+    default: "/tmp/CypressBinary"
   cache_name:
     description: 'Dependency cache name (default = "cache-touring")'
     required: false
-    default: 'cache-touring'
+    default: "cache-touring"
   record_key:
-    description: 'Cypress Record Key'
+    description: "Cypress Record Key"
     required: true
   db_dump_folder:
     description: 'Path to mongo "dump" folder to restore (default = "cypress/fixtures/e2e/dump)'
     required: false
-    default: 'cypress/fixtures/e2e/dump'
+    default: "cypress/fixtures/e2e/dump"
   db_name:
     description: 'Database name to use for run (default = "uta-test")'
     required: false
-    default: 'uta-test'
+    default: "uta-test"
+  wait_on:
+    description: "API and APP URLs to wait on"
+    required: false
+    default: "http://localhost:3010, http://localhost:8001"
+  config_file:
+    description: "Config file for the cypress set up on the APP"
+    required: false
+    default: "cypress.config.ts"
 
 runs:
   using: "composite"
   steps:
-    - name: Test step 
+    - name: Test step
       shell: bash
       run: |
         echo "In ${{ github.ref_name }}"
@@ -74,7 +82,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '16'
+        node-version: "16"
 
     - name: Cache dependencies
       id: cache
@@ -89,7 +97,7 @@ runs:
     - name: Start DB
       uses: supercharge/mongodb-github-action@1.7.0
       with:
-        mongodb-version: '5.0'
+        mongodb-version: "5.0"
 
     - name: Restore DB
       shell: bash
@@ -104,7 +112,7 @@ runs:
       working-directory: ./api
       env:
         MONGO_URL: mongodb://localhost:27017/${{ inputs.db_name }}
-        JWT_SECRET: 'THIS_IS_ONLY_TO_BE_USED_IN_DEV_OR_TEST'
+        JWT_SECRET: "THIS_IS_ONLY_TO_BE_USED_IN_DEV_OR_TEST"
       run: NODE_ENV=local pm2 start app.js
 
     - name: Cypress Run
@@ -114,10 +122,10 @@ runs:
         browser: chrome
         working-directory: ./app
         start: yarn start
-        config-file: cypress.config.ts
+        config-file: ${{ inputs.config_file }}
         spec: ${{ inputs.spec }}
         wait-on-timeout: 300
-        wait-on: 'http://localhost:3010, http://localhost:8001'
+        wait-on: ${{ inputs.wait_on }}
         record: true
         tag: ${{ github.event_name }}, ${{ inputs.api_branch }}
       env:
