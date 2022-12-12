@@ -129,7 +129,7 @@ runs:
         config-file: ${{ inputs.config_file }}
         spec: ${{ inputs.spec }}
         wait-on-timeout: 300
-        wait-on: http://localhost:${{ inputs.client_port }}, http://localhost:${{ inputs.server_port }}
+        wait-on: 'http://localhost:${{ inputs.client_port }}, http://localhost:${{ inputs.server_port }}'
         record: true
         tag: ${{ github.event_name }}, ${{ inputs.api_branch }}
       env:
