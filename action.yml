@@ -45,12 +45,16 @@ inputs:
     description: 'Database name to use for run (default = "uta-test")'
     required: false
     default: "uta-test"
-  wait_on:
-    description: "API and APP URLs to wait on"
+  client_port:
+    description: 'Client app port (default = "3010")'
     required: false
-    default: "http://localhost:3010, http://localhost:8001"
+    default: "3010"
+  server_port:
+    description: 'Server port (default = "8001")'
+    required: false
+    default: "8001"
   config_file:
-    description: "Config file for the cypress set up on the APP"
+    description: 'Config file for the cypress set up on the APP (default = "cypress.config.ts")'
     required: false
     default: "cypress.config.ts"
 
@@ -125,7 +129,7 @@ runs:
         config-file: ${{ inputs.config_file }}
         spec: ${{ inputs.spec }}
         wait-on-timeout: 300
-        wait-on: ${{ inputs.wait_on }}
+        wait-on: http://localhost:${{ inputs.client_port }}, http://localhost:${{ inputs.server_port }}
         record: true
         tag: ${{ github.event_name }}, ${{ inputs.api_branch }}
       env:
