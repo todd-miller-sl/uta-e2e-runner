@@ -1,0 +1,57 @@
+name: Build and Publish master touring-calculation package
+on:
+  push:
+    branches:
+      - "master"
+jobs:
+  build:
+    name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
+
+    permissions:
+      contents: write
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        node: ["16"]
+        os: [ubuntu-latest]
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Use Node ${{ matrix.node }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Install deps and build (with cache)
+        uses: bahmutov/npm-install@v1
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Test
+        run: yarn test
+
+      - name: Build
+        run: yarn prepare
+
+      - name: "Automated Version Bump"
+        id: version-bump
+        uses: "phips28/gh-action-bump-version@master"
+        with:
+          version-type: "patch"
+          default: "patch"
+          skip-tag: "true"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to GitHub private NPM registry and publish
+        env:
+          CI_ACCESS_TOKEN: ${{ secrets.UTA_SVC_PAT }}
+        shell: bash
+        run: |
+          npm install -g npm-cli-login
+          npm-cli-login -u "svc-uta" -p "${CI_ACCESS_TOKEN}" -e "IT_Engineering@unitedtalent.com" -r "https://npm.pkg.github.com" -s "@united-talent-agency"
+          npm publish
