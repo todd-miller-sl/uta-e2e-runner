@@ -11,3 +11,9 @@ recommended that you get set it to expire in 90-days. For scopes choose two from
 You can find more information at: https://unitedtalent.atlassian.net/wiki/spaces/E/pages/224198657/Using+private+repos+in+an+organisation+as+a+dependency
 
 **Note:** The private npm registry is served by GitHub and the package is associated with the `touring-calculations` repo.
+
+<span style=color:red>**IMPORTANT NOTE:**</span> There is apparently a bug which you may encounter when trying to use 
+`yarn add @united-talent-agency/touring-calculations` to add touring-calculations npm package (this is a scoped package 
+name consisting of an "@", a scoped name, a slash and the package name). `yarn` may decide to replace the slash with a 
+"%2f" (URI encoded?) and fail to add the package. If this happens, add the dependency directly to the `package.json` 
+file and run `yarn`.
