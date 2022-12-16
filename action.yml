@@ -57,6 +57,10 @@ inputs:
     description: 'Config file for the cypress set up on the APP (default = "cypress.config.ts")'
     required: false
     default: "cypress.config.ts"
+  node_version:
+    description: 'node version to run with'
+    required: false
+    default: '16'
 
 runs:
   using: "composite"
@@ -86,7 +90,7 @@ runs:
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: "16"
+        node-version: ${{ inputs.node_version }}
 
     - name: Cache dependencies
       id: cache
@@ -140,3 +144,4 @@ runs:
         # - if the event is pull_request, then we set the commit
         # message to the pull request title
         COMMIT_INFO_MESSAGE: ${{ github.event.pull_request.title }}
+
