@@ -45,7 +45,7 @@ jobs:
           default: "patch"
           skip-tag: "true"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.UTA_SVC_PAT }}
 
       - name: Login to GitHub private NPM registry and publish
         env:
