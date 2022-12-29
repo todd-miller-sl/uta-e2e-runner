@@ -26,6 +26,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
+    "dart.analysis.tool.window.visible": "false",
     "last_opened_file_path": "/Users/todd/Projects/uta/uta-e2e-runner",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -44,6 +45,7 @@
       <updated>1669823682753</updated>
       <workItem from="1669823683853" duration="930000" />
       <workItem from="1670616583430" duration="726000" />
+      <workItem from="1671548530283" duration="483000" />
     </task>
     <servers />
   </component>
