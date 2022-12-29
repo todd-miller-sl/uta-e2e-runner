@@ -1,6 +1,6 @@
 {
   "name": "@united-talent-agency/touring-calculations",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Common calculations used in the touring application.",
   "main": "lib/index.js",
   "author": "united-talent-agency",
